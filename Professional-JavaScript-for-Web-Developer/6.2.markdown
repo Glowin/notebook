@@ -374,4 +374,54 @@ alert(person1.hasOwnProperty("name"));	//false
 alert("name" in person1);	//true
 ```
 
-在以上代码执行的整个过程中，
+在以上代码执行的整个过程中，name 属性要么是直接在对象上访问到的，要么是通过原型访问到的。因此，调用"name" in person1 始终都返回 true，无论该属性存在于实例中还是存在与原型中。同时使用 hasOwnProperty()方法和 in 操作符，就可以确定该属性到底是存在于对象中，还是存在于原型中，如下所示。
+
+```js
+function hasPrototypeProperty(object, name){
+	return !object.hasOwnProperty(name) && (name in Object);
+}
+```
+
+由于 in 操作符只要通过对象能够访问到属性就返回 true，hasOwnProperty()只在属性存在于实例中时才返回 true，因此只要 in 操作符返回 true 而 hasOwnProperty()返回 false，就可以确定属性是原型中的属性。下面来看一看上面定义的函数 hasPrototypeProperty()的用法。
+
+```js
+function Person() {
+}
+Person.prototype.name = "Nicholas";
+Person.prototype.age = 29;
+Person.prototype.job = "Software Engineer";
+Person.prototype.sayName = function() {
+	alert(this.name);
+};
+
+var person = new Person();
+alert(hasPrototypeProperty(person, "name"));	//true
+
+
+person.name = "Greg";
+alert(hasPrototypeProperty(person, "name"));	//false
+```
+
+在这里，name 属性显示存在与原型中，因此 hasPrototypeProperty()返回 true。当在实例中重写 name 属性后，该属性就存在于实例中了，因此 hasPrototypeProperty()返回 false。即使原型中仍然有 name 属性，但由于现在实例中也有了这个属性，因此原型中的 name 属性就用不到了。
+
+在使用 for-in 循环时，返回的是所有能够通过对象访问的、可枚举的(enumerated)属性，其中既包括存在与实例中的属性，也包括存在与原型中的属性。屏蔽了原型中不可枚举属性（即将\[\[Enumberable\]\]标记的属性）的实例也会在 for-in 循环中返回，因为根据规定，所有开发人员定义的属性都是可枚举的——只有在 IE8 及更早版本中例外。
+
+IE 早期版本的实现中存在一个 bug，即屏蔽不可枚举属性的实例属性不会出现在 for-in 循环中。例如：
+
+```js
+var o = {
+	toString: function() {
+		return "My Object";
+	}
+};
+
+for (var prop in o) {
+	if (prop == "toString") {
+		alert("Found toString");	//在 IE 中不会显示
+	}
+}
+```
+
+当以上代码运行时，应该会显示一个警告框，表明找到了 toString() 方法。这里的对象 o 定义了一个名为 toString() 的方法，该方法屏蔽了原型中（不可枚举）的 toString() 方法。在 IE 中，由于其实现认为原型的 toString() 方法被打上了[[Enumerable]]标记就应该跳过该属性，结果我们就不会看到警告框。该 bug 会影响默认不可枚举的所有属性和方法，包括：hasOwnProperty()、propertyIsEnumerable()、toLocaleString()、toString()和valueOf()，ECMAScript 5 也将 constructor 和 prototype 属性的[[Enumberle]]特性设置喂 false，但并不是所有浏览器都照此实现。
+
+
