@@ -534,6 +534,7 @@ Object.defineProperty(Person.prototype, "constructor", {
 	enumerable: false,
 	value: Person
 });
+```
 
 ###4. 原型的动态性###
 
