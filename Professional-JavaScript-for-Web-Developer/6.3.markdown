@@ -41,3 +41,18 @@ alert(instance.getSuperValue());	//true
 ###1. 别忘记默认的原型###
 
 事实上，前面例子中展示的原型链还少一环。我们知道，所有引用类型默认都继承了 Object，而这个继承也是通过原型链实现的。大家要记住，所有函数的默认原型都是 Object 的实例，因此默认原型都会包含一个内部指针，指向 Object.prototype。这也正是所有自定义类型都会继承 toString()、valueOf()等默认方法的根本原因。所以，我们说上面例子展示的原型链中还包括另外一个继承层次。图6-5为我们展示了该例子中完整的原型链。
+
+一句话，SubType 继承了 SuperType，而 SuperType 继承了 Object。当调用 instance.toString() 时，实际上调用的是保存在 Object.prototype 中的那个方法。
+
+###2. 确定原型和实例的关系###
+
+可以通过两种方式来确定原型和实例之间的关系。第一种方式是使用 instanceof 操作符，只要用这个操作符来测试实例与原型链中出现过的构造函数，结果就会返回 true。以下几行代码就说明了这一点。
+
+```js
+alert(instance instanceof Object);	//ture
+alert(instance instanceof SuperType);	//ture
+alert(instance instanceof SubType);	//ture
+```
+
+由于原型链的关系，我们可以说 instance 是 Object、SuperType 或 SubType 中任何一个类型的实例。因此，测试这三个构造函数的结果都返回了 true,如下所示。
+
