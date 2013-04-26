@@ -54,5 +54,13 @@ alert(instance instanceof SuperType);	//ture
 alert(instance instanceof SubType);	//ture
 ```
 
-由于原型链的关系，我们可以说 instance 是 Object、SuperType 或 SubType 中任何一个类型的实例。因此，测试这三个构造函数的结果都返回了 true,如下所示。
+由于原型链的关系，我们可以说 instance 是 Object、SuperType 或 SubType 中任何一个类型的实例。因此，测试这三个构造函数的结果都返回了 true。
+
+第二种方式是使用 isPrototypeOf() 方法。同样，只要是原型链中出现过的原型，都可以说是该原型链所派生的实例的原型，因此 isPrototypeOf() 方法也会返回 true，如下所示。
+
+```js
+alert(Object.prototype.isPrototypeOf(instance));	//true
+alert(SuperType.prototype.isPrototypeOf(instance));	//true
+alert(SubType.prototype.isPrototypeOf(instance));	//ture
+```
 
